@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="BlazorFrontend/BlazorFrontend.csproj" />
+  <Project Path="TTRPGOrganizer.shared/TTRPGOrganizer.shared.csproj" />
   <Project Path="TTRPGOrganizer/TTRPGOrganizer.csproj" />
 </Solution>

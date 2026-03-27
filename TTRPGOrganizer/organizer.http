@@ -1,1 +1,26 @@
+
 GET http://localhost:5095
+###
+GET http://localhost:5095/campaigns/
+### 
+POST http://localhost:5095/rpgsystem/
+Content-Type: application/json
+
+{
+  "name": "Dungeons & Dragons",
+  "shortName": "DnD 5e",
+  "description": "The most popular RPG system"
+}
+
+### 
+POST http://localhost:5095/campaigns
+Content-Type: application/json
+
+{
+  "name": "Curse of Strahd",
+  "rpgSystemId": 1,
+  "userType": 0,
+  "description": "Vampires"
+}
+###
+GET http://localhost:5095/rpgsystem/
