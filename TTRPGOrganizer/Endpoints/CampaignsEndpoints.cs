@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using TTRPGOrganizer.Data;
 using TTRPGOrganizer.Models;
 using TTRPGOrganizer.shared.DTOs;
-using TTRPGOrganizer.shared.Enums;
 
 
 
@@ -10,7 +10,7 @@ namespace TTRPGOrganizer.Endpoints;
 
 public static class CampaignsEndpoints
 {
-    const string GetCampaignEndpointName = "GetCampaign";
+    private const string GetCampaignEndpointName = "GetCampaign";
 
     public static void MapCampaignsEndpoints(this WebApplication app)
     {
@@ -31,7 +31,7 @@ public static class CampaignsEndpoints
         // POST /campaigns
         group.MapPost("/", async (CreateCampaignDto newCampaign, OrganizerContext db) =>
         {
-            Campaign campaign = new Campaign()
+            var campaign = new Campaign()
             {
                 Name = newCampaign.Name,
                 RpgSystemId = newCampaign.RpgSystemId,
@@ -40,7 +40,7 @@ public static class CampaignsEndpoints
             };
             db.Campaigns.Add(campaign);
             await db.SaveChangesAsync();
-            CampaignDetailsDto campaignDto = new CampaignDetailsDto(
+            var campaignDto = new CampaignDetailsDto(
                 campaign.Id,
                 campaign.Name,
                 campaign.RpgSystemId,
@@ -50,6 +50,15 @@ public static class CampaignsEndpoints
                 );
 
             return TypedResults.CreatedAtRoute(campaignDto, GetCampaignEndpointName, new {id = campaignDto.Id});
+        });
+        // DELETE /campaigns/{id}
+        group.MapDelete("/{id:int}", async Task<Results<NotFound, NoContent>> (int id, OrganizerContext db) =>
+        {
+            if (await db.Campaigns.Where(campaign => campaign.Id == id).ExecuteDeleteAsync() == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.NoContent();
         });
     }
 }

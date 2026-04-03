@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using TTRPGOrganizer.Data;
 using TTRPGOrganizer.Endpoints;
 
@@ -15,7 +16,15 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<OrganizerContext>();
     await dbContext.Database.MigrateAsync(); 
 }
-
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    });
+}
 app.MapCampaignsEndpoints();
 app.MapRpgSystemEndpoints();
 app.MapGet("/", () => "Hello World!");

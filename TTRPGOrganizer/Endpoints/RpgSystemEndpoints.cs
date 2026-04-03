@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using TTRPGOrganizer.Data;
 using TTRPGOrganizer.Models;
@@ -7,27 +8,27 @@ namespace TTRPGOrganizer.Endpoints;
 
 public static class RpgSystemEndpoints
 {
-    const string GetRpgSystemEndpointName = "GetRpgSystem";
+    private const string GetRpgSystemEndpointName = "GetRpgSystem";
 
     public static void MapRpgSystemEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/rpgsystem");
-        // GET /rpgsystem
+        var group = app.MapGroup("/rpg-systems");
+        // GET /rpg-systems
         group.MapGet("/", async (OrganizerContext db) =>
         {
             var rpgSystems = await db.RpgSystems.ToListAsync();
             return TypedResults.Ok(rpgSystems);
         });
-        // GET /rpgsystem/{id}
+        // GET /rpg-systems/{id}
         group.MapGet("/{id:int}", async (int id, OrganizerContext db) =>
         {
             var rpgSystem = await db.RpgSystems.FindAsync(id);
             return TypedResults.Ok(rpgSystem);
         }).WithName(GetRpgSystemEndpointName);
-        // POST /rpgsystem
+        // POST /rpg-systems
         group.MapPost("/", async (CreateRpgSystemDto newRpgSystem, OrganizerContext db) =>
         {
-            RpgSystem rpgSystem = new RpgSystem()
+            var rpgSystem = new RpgSystem()
             {
                 Name = newRpgSystem.Name,
                 ShortName = newRpgSystem.ShortName,
@@ -35,14 +36,21 @@ public static class RpgSystemEndpoints
             };
             db.RpgSystems.Add(rpgSystem);
             await db.SaveChangesAsync();
-            RpgSystemDetailsDto rpgSystemDto = new RpgSystemDetailsDto(
+            var rpgSystemDto = new RpgSystemDetailsDto(
             rpgSystem.Id,
             rpgSystem.Name,
             rpgSystem.ShortName,
             rpgSystem.Description);
             return TypedResults.CreatedAtRoute(rpgSystemDto, GetRpgSystemEndpointName, new {id = rpgSystemDto.Id});
-
         });
-        
+        // DELETE /rpg-systems/{id}
+        group.MapDelete("/{id:int}", async Task<Results<NotFound,NoContent>> (int id, OrganizerContext db) =>
+        {
+            if (await db.RpgSystems.Where(rpgSystem => rpgSystem.Id == id).ExecuteDeleteAsync() == 0)
+            {
+                return TypedResults.NotFound();
+            }
+            return TypedResults.NoContent();
+        });
     }
 }
