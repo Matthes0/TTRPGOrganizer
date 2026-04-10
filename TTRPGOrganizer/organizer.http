@@ -1,9 +1,9 @@
 
 GET http://localhost:5095
 ###
-GET http://localhost:5095/campaigns/
+GET http://localhost:5095/campaigns
 ### 
-POST http://localhost:5095/rpgsystem/
+POST http://localhost:5095/rpgsystem
 Content-Type: application/json
 
 {
@@ -15,12 +15,28 @@ Content-Type: application/json
 ### 
 POST http://localhost:5095/campaigns
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Curse of Strahd",
   "rpgSystemId": 1,
-  "userType": 0,
   "description": "Vampires"
 }
 ###
-GET http://localhost:5095/rpgsystem/
+GET http://localhost:5095/rpgsystem
+### 
+POST http://localhost:5095/register
+Content-Type: application/json
+
+{
+  "email": "test@user.pl",
+  "password": "P@ssword123"
+}
+###
+POST http://localhost:5095/login
+Content-Type: application/json
+
+{
+"email": "test@user.pl",
+"password": "P@ssword123"
+}

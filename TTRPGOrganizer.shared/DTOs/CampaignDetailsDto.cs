@@ -7,7 +7,7 @@ public record CampaignDetailsDto(
     int Id,
     string Name,
     int? RpgSystemId,
-    UserType UserType,
     string? Description,
-    string? PersonalNotes
+    string? SharedNotes,
+    IEnumerable<CampaignMemberDetailsDto>  Members
     );

@@ -1,9 +1,12 @@
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using TTRPGOrganizer.Data;
+using TTRPGOrganizer.Extensions;
 using TTRPGOrganizer.Models;
 using TTRPGOrganizer.shared.DTOs;
-
+using TTRPGOrganizer.shared.Enums;
 
 
 namespace TTRPGOrganizer.Endpoints;
@@ -29,26 +32,30 @@ public static class CampaignsEndpoints
         }).WithName(GetCampaignEndpointName);
         
         // POST /campaigns
-        group.MapPost("/", async (CreateCampaignDto newCampaign, OrganizerContext db) =>
+        group.MapPost("/", async Task<Results<UnauthorizedHttpResult, CreatedAtRoute<CampaignDetailsDto>>> (CreateCampaignDto newCampaign, OrganizerContext db, ClaimsPrincipal user) =>
         {
+            var userIdString = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return TypedResults.Unauthorized();                
+            }
             var campaign = new Campaign()
             {
                 Name = newCampaign.Name,
                 RpgSystemId = newCampaign.RpgSystemId,
-                UserType = newCampaign.UserType,
                 Description = newCampaign.Description,
             };
+            
+            campaign.Members.Add(new CampaignMember
+            {
+                UserId = userIdString,
+                UserType = UserType.GameMaster,
+            });
+            
             db.Campaigns.Add(campaign);
             await db.SaveChangesAsync();
-            var campaignDto = new CampaignDetailsDto(
-                campaign.Id,
-                campaign.Name,
-                campaign.RpgSystemId,
-                campaign.UserType,
-                campaign.Description,
-                campaign.PersonalNotes
-                );
-
+            var name = user.Identity?.Name ?? "Unknown";
+            var campaignDto = campaign.ToDetailsDto(name);
             return TypedResults.CreatedAtRoute(campaignDto, GetCampaignEndpointName, new {id = campaignDto.Id});
         });
         // DELETE /campaigns/{id}
