@@ -10,7 +10,7 @@ public class CampaignMember
     public int CampaignId { get; set; }
     public Campaign Campaign { get; set; } = null!;
     
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
     public IdentityUser User { get; set; } = null!;
     
     public required UserType UserType { get; set; }

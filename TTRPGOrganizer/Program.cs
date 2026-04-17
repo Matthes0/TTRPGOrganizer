@@ -31,6 +31,7 @@ app.UseAuthorization();
 
 app.MapCampaignsEndpoints();
 app.MapRpgSystemEndpoints();
+app.MapCampaignMembersEndpoints();
 app.MapGet("/", () => "Hello World!");
 app.MapIdentityApi<IdentityUser>();
 app.Run();

@@ -10,5 +10,5 @@ public class OrganizerContext(DbContextOptions<OrganizerContext> options) : Iden
     public DbSet<Campaign> Campaigns => Set<Campaign>();
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<RpgSystem> RpgSystems => Set<RpgSystem>();
-    
+    public DbSet<CampaignMember> CampaignMembers => Set<CampaignMember>();
 }
