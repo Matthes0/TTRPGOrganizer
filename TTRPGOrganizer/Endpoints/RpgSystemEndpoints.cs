@@ -52,5 +52,16 @@ public static class RpgSystemEndpoints
             }
             return TypedResults.NoContent();
         });
+        // PATCH /rpg-systems/{id}
+        group.MapPatch("/{id:int}", async Task<Results<NotFound, NoContent>>(int id, PatchRpgSystemDto updatedRpgSystem, OrganizerContext db) =>
+        {
+            var rpgSystem = await db.RpgSystems.FindAsync(id);
+            if (rpgSystem is null) return TypedResults.NotFound();
+            if (updatedRpgSystem.Name is not null) rpgSystem.Name = updatedRpgSystem.Name;
+            if (updatedRpgSystem.ShortName is not null) rpgSystem.ShortName = updatedRpgSystem.ShortName;
+            if (updatedRpgSystem.Description is not null) rpgSystem.Description = updatedRpgSystem.Description;
+            await  db.SaveChangesAsync();
+            return TypedResults.NoContent();
+        });
     }
 }
