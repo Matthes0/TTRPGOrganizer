@@ -40,3 +40,13 @@ Content-Type: application/json
 "email": "test@user.pl",
 "password": "P@ssword123"
 }
+###
+POST http://localhost:5095/campaigns/9/members
+Content-Type: application/json
+
+{
+  "userId": "fc5addf2-fd38-4081-b35d-8c5932aac9ce",
+  "UserType": 1
+}
+###
+GET http://localhost:5095/campaigns/9/members/10
