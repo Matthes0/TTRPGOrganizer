@@ -1,4 +1,4 @@
-const Login = () => {
+const Profile = () => {
     return (
         <div>
             
@@ -6,4 +6,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Profile;
